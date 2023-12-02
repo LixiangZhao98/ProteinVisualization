@@ -10,3 +10,7 @@ This is a Protein Visualization demo project built with Unity3D. It reads and vi
 <div align=center>
 <img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein2.png" width="615" height="684"> <width="615" height="684"/>
 </div>
+
+<div align=center>
+<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition.gif" width="615" height="684"> <width="615" height="684"/>
+</div>
