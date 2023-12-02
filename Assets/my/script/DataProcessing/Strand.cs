@@ -131,10 +131,13 @@ public void AppendBondInsideRes()
 public void AppendBondBetweenRes()
 {
    for(int i=0;i< lAminoAcids.Count-1;i++)
-   {
+   {                if (((lAminoAcids[i].GetCAtom().pos-lAminoAcids[i+1].GetNAtom().pos).magnitude) < 1.6f)
+                {
       lAminoAcids[i].GetCAtom().bonds.Add(lAminoAcids[i+1].GetNAtom());
       lAminoAcids[i+1].GetNAtom().bonds.Add(lAminoAcids[i].GetCAtom());
       lAminoAcids[i].GetCAtom().singleDirectionBonds.Add(lAminoAcids[i+1].GetNAtom());
+                }
+
    }
 }
 
@@ -164,5 +167,38 @@ public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform 
        a.GenerateLongStick(_g,_standardStickWidth,_father);
        }
 }
+public void GenerateBackBone(GameObject _g,float _standardStickWidth,Transform _father)
+{
+            for(int i=0;i<backBone.Count-1;i++)
+            {
+                Vector3 A=backBone[i].pos;
+                Vector3 B=backBone[i+1].pos;
+                Vector3 dir=(A-B).normalized; //A-B
+                Vector3 start=A;
+                Vector3 end=B;
+                GameObject g= GameObject.Instantiate(_g,(start+end)/2,Quaternion.identity);
+                g.name=backBone[i].fullElementName+" "+backBone[i+1].fullElementName;
+                g.transform.localScale=new Vector3(_standardStickWidth,(start-end).magnitude/2*1.04f,_standardStickWidth); 
+                g.transform.up=dir;
+                g.GetComponent<Renderer>().material.SetColor("_Color1",backBone[i].Color);
+                //g.transform.GetChild(0).GetComponent<Renderer>().material.color=lStrands[i].GetBackBone(j).Color;
+                g.GetComponent<Renderer>().material.SetColor("_Color2",backBone[i+1].Color);
+                //g.transform.GetChild(1).GetComponent<Renderer>().material.color=lStrands[i].GetBackBone(j+1).Color;
+                g.GetComponent<Renderer>().material.SetFloat("_Length",(start-end).magnitude*1.8f);
+
+                g.transform.parent=_father;
+                
+            }
+}
+void DrawBond(List<Atom> LAtoms) //Draw bonds between all atoms
+    {
+        for (int i = 0; i < LAtoms.Count; i++)
+        {
+            for (int j = 0; j < LAtoms[i].singleDirectionBonds.Count; j++)
+            {
+                Debug.DrawLine(LAtoms[i].obj.transform.position, LAtoms[i].singleDirectionBonds[j].obj.transform.position, Color.red,0.01f,false);
+            }
+        }
+    }
 #endregion
 }

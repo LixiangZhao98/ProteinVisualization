@@ -1,13 +1,16 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SplineMesh;
 using UnityEngine;
+using utility;
 
 
 public class PDBLoader
 {
-
-
+   
+static public int maxRank;
    const float HRadius=0.58f;  // 原0.78f
    const float CRadius=0.96f;  //0.86
    const float ORadius=0.76f;  //0.66
@@ -80,7 +83,7 @@ public class PDBLoader
             lStrands.Add(strand);
             strandID++;
             strand=new Strand(strandID,ColorDefinition.strandsColorPool[strandID%ColorDefinition.strandsColorPool.Length]);
-           
+            aminoAcid=new AminoAcid(0);
          }
 
 
@@ -91,8 +94,6 @@ public class PDBLoader
                          {
                             if(aminoAcid.GetAtomsNum()!=0)
                             {strand.AddAminoAcids(aminoAcid);}
- 
-                           
                              aminoAcid=new AminoAcid(int.Parse(str.Substring(23, 4).Trim()));
                          }
                        
@@ -100,7 +101,12 @@ public class PDBLoader
                 atom.atomID = int.Parse(str.Substring(7, 5).Trim());
                 atom.fullElementName = str.Substring(12,4).Trim();
                 atom.elementName = atom.fullElementName.Substring(0,1);
-                atom.AtomID= str.Substring(14,2).Trim(); 
+
+                if(atom.fullElementName.Length==1)
+                atom.AtomIndex=" ";
+                else
+                atom.AtomIndex=atom.fullElementName.Substring(1,1); 
+                
                 atom.aminoAcidName = str.Substring(17, 3).Trim();
                 atom.aminoAcidsID = int.Parse(str.Substring(23, 4).Trim());
                 atom.pos = new Vector3(float.Parse(str.Substring(31, 8).Trim()), float.Parse(str.Substring(39, 8).Trim()), float.Parse(str.Substring(47, 8).Trim()));
@@ -138,33 +144,70 @@ public class PDBLoader
                 atom.Radius=SRadius;
                 countS++;
             }
+            else
+            {
+                atom.Color=ColorDefinition.otherColor;
+                atom.Radius=SRadius;
+                others++;
+            }
             
             
             if(atom.fullElementName=="N"||atom.fullElementName=="CA"||atom.fullElementName=="C")
             {
                 strand.AddAtomToBackBone(atom);
+                atom.AtomRank=0;
                 if(atom.fullElementName=="N")
                 aminoAcid.SetNAtom(atom);
                 if(atom.fullElementName=="C")
                 aminoAcid.SetCAtom(atom);
             }
+            else
+            {atom.AtomRank=-1;}
+
             
-            aminoAcid.AddAtom(atom);
-            
-            
+            aminoAcid.AddAtom(atom);  
       }
-
-        
         }
-  
-            sr.Close();
- 
 
-
+        sr.Close();
         AppendBond();
         HowManyAtoms();
+        CalAtomRank();
+        ShiftProtein();
+
     }
-   
+
+void CalAtomRank()
+{
+foreach(var strand_ in lStrands)
+        {
+        Stack sAtoms=new Stack();
+        sAtoms.Push(strand_.GetBackBone(0));
+        while(sAtoms.Count!=0)
+        {
+            Atom atom=(Atom)sAtoms.Pop();
+            int rank=atom.AtomRank;
+            foreach(var b in atom.bonds)
+            {
+                if(!b.visited)
+                {
+              sAtoms.Push(b);
+              b.visited=true;
+              if(b.AtomRank==-1)
+              {
+                b.AtomRank=rank+1;
+                 if(maxRank<b.AtomRank)
+                  {
+                  maxRank=b.AtomRank;
+                 }
+              }
+                }
+              
+            }
+        
+        }
+    }
+}
 void AppendBond()
     {
         for(int s=0;s<lStrands.Count;s++)
@@ -188,11 +231,20 @@ void HowManyAtoms()
         Debug.Log("S ATOMS = " + countS);
         Debug.Log("Other ATOMS = " + others);
         Debug.Log("Total ATOMS = " + total);
+        Debug.Log("Strand Count = " + lStrands.Count);
+        foreach(var s in lStrands)
+        {
+            Debug.Log("backbone Count = " + s.GetBackBoneNum());
+        }        
     }
 
-public void ShiftNode(Transform _t)
+public void ShiftProtein()
 {
-   _t.position-=GetCenter();
+  
+       foreach(var ss in lStrands)
+    {
+        ss.shiftVec3(-GetCenter());
+    }
 }
 Vector3 GetCenter()
 {
@@ -207,30 +259,30 @@ Vector3 GetCenter()
 
 #region  rendering
 
-public void DrawAbstraction(Abstraction  _abstraction,GameObject _objAtom,GameObject _objStick,float _standardAtomScale, float _standardStickWidth,float _strandWidth,Transform _father)
+public void DrawAbstraction(Abstraction  _abstraction,GameObject _objSplineMesh,GameObject _objAtom,GameObject _objStick,float _standardAtomScale, float _standardStickWidth,float _strandWidth,Transform _father)
     {
      switch (_abstraction)
      {
        case Abstraction.SpaceFilling:
       
-         GenerateSphere(_objAtom,2f,_father);
+         GenerateSphere(_objAtom,2f,_father.GetChild(0));
        break;
 
 
 
        case Abstraction.BallAndStick:
         
-         GenerateSphere(_objAtom,1f,_father);
-         GenerateShortStick(_objStick,_standardStickWidth,_father);
+         GenerateSphere(_objAtom,1f,_father.GetChild(0));
+         GenerateLongStick(_objStick,_standardStickWidth,_father.GetChild(1));
        break;
        case Abstraction.Stick:
-         GenerateLongStick(_objStick,_standardStickWidth,_father);
+         GenerateLongStick(_objStick,_standardStickWidth,_father.GetChild(1));
                 break;
        case Abstraction.BackBone:
-         GenerateBackBone(_objStick,_standardStickWidth,_father);
+         GenerateBackBone(_objStick,_standardStickWidth,_father.GetChild(1));
                 break;
        case Abstraction.Ribbon:
-         GenerateStrand(_strandWidth,_father);
+         GenerateStrandTube(_objSplineMesh,_strandWidth,_father.GetChild(2),1,0.1f);
                 break;
         default:break;
      }
@@ -255,36 +307,21 @@ public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform 
  {
             foreach(var s in lStrands)
     {
+      
        s.GenerateLongStick(_g,_standardStickWidth,_father);
     }
  }
 public void GenerateBackBone(GameObject _g,float _standardStickWidth,Transform _father)
  {
-             for (int i = 0; i < lStrands.Count; i++)
-        {
-            for(int j=0;j<lStrands[i].GetBackBoneNum()-1;j++)
-            {
-                Vector3 A=lStrands[i].GetBackBone(j).pos;
-                Vector3 B=lStrands[i].GetBackBone(j+1).pos;
-                Vector3 dir=(A-B).normalized; //A-B
-                Vector3 start=A;
-                Vector3 end=B;
-                GameObject g= GameObject.Instantiate(_g,(start+end)/2,Quaternion.identity);
-                
-                g.transform.localScale=new Vector3(_standardStickWidth,(start-end).magnitude/2,_standardStickWidth); 
-                g.transform.up=dir;
-                g.GetComponent<Renderer>().material.SetColor("_Color1",lStrands[i].GetBackBone(j).Color);
-                g.transform.GetChild(0).GetComponent<Renderer>().material.color=lStrands[i].GetBackBone(j).Color;
-                g.GetComponent<Renderer>().material.SetColor("_Color2",lStrands[i].GetBackBone(j+1).Color);
-                g.transform.GetChild(1).GetComponent<Renderer>().material.color=lStrands[i].GetBackBone(j+1).Color;
-                g.transform.parent=_father.GetChild(1);
+                foreach(var s in lStrands)
+    {
+       s.GenerateBackBone(_g,_standardStickWidth,_father);
+    }
 
-            }
-                
-            }
+
  }
 
- public void GenerateStrand(float _strandWidth,Transform _father)
+ public void GenerateStrandTube(GameObject _g,float _strandWidth,Transform _father,float _segment,float _step)
  {
     int maxPoints=4000;
      for (int i = 0; i <lStrands.Count; i++)
@@ -295,26 +332,88 @@ public void GenerateBackBone(GameObject _g,float _standardStickWidth,Transform _
                 atomPos[j]=lStrands[i].GetBackBone(j).pos;
             }
 
-            Vector3[] SmoothingPos= LineSmoother.GenerateSmoothCurve(atomPos);
+            Vector3[] SmoothingPos= LineSmoother.GenerateSmoothCurve(atomPos,_segment,_step);
             for(int k=0;k<=SmoothingPos.Length/maxPoints;k++)
             {
-            GameObject g=new GameObject("strand");
+            GameObject g=new GameObject("strandTube");
+            g.transform.rotation=_father.rotation;
+            g.transform.position=_father.position;
+            g.transform.localScale=_father.localScale;
             g.AddComponent<TubeRenderer>();
 
             if(k==SmoothingPos.Length/maxPoints)
             g.GetComponent<TubeRenderer>().points=SmoothingPos.ToList().GetRange(k*maxPoints,SmoothingPos.Length-k*maxPoints).ToArray();
             else
             g.GetComponent<TubeRenderer>().points=SmoothingPos.ToList().GetRange(k*maxPoints,maxPoints).ToArray();
-
+            
+            g.GetComponent<TubeRenderer>().radius=_strandWidth;
             g.GetComponent<MeshRenderer>().material=new Material(Shader.Find("HDRP/LitTessellation"));
             g.GetComponent<MeshRenderer>().material.SetFloat("_Metallic",1f);
             g.GetComponent<MeshRenderer>().material.SetFloat("_Smoothness",0.256f);
             g.GetComponent<MeshRenderer>().material.color=lStrands[i].GetColor();
-            g.transform.parent=_father.GetChild(2);
+
+            g.transform.parent=_father;
             }
             
         }
  }
+
+  public void GenerateRibbon(GameObject _g,float _strandWidth,Transform _father)
+ {
+    
+     for (int i = 0; i <lStrands.Count; i++)
+        {
+
+            Vector3[] atomPos=new Vector3[lStrands[i].GetBackBoneNum()];
+            for(int j=0;j<lStrands[i].GetBackBoneNum();j++)
+            {
+                atomPos[j]=lStrands[i].GetBackBone(j).pos;
+            }
+
+           Vector3[] SmoothingPos= LineSmoother.GenerateSmoothCurve(atomPos,10,1f);
+           GameObject g=new GameObject("strandMesh");
+           SplineNode[]splineNodes=new SplineNode[SmoothingPos.Length];
+           float width=0.3f;
+           float thickness=0.1f;
+           for(int j=0;j<SmoothingPos.Length;j++)
+           {
+            
+            if(j==SmoothingPos.Length-1)
+            {splineNodes[j]=new SplineNode(SmoothingPos[j],SmoothingPos[j-1]);
+            splineNodes[j].Scale=new Vector2(width,thickness);}
+            else if(j==0)
+            {
+            {splineNodes[j]=new SplineNode(SmoothingPos[j],SmoothingPos[j+1]);
+            splineNodes[j].Scale=new Vector2(width,thickness);}
+            }
+            else
+            {splineNodes[j]=new SplineNode(SmoothingPos[j],(SmoothingPos[j+1]));
+            splineNodes[j].Scale=new Vector2(width,thickness);}
+            
+           }
+        // SplineNode[]splineNodes=new SplineNode[3];
+        //    splineNodes[0]=new SplineNode(Vector3.zero,Vector3.one);
+        //    splineNodes[1]=new SplineNode(Vector3.one,new Vector3(1f,1f,1.5f)) ;
+        //    splineNodes[2]=new SplineNode(new Vector3(1f,1f,1.5f),Vector3.up) ;
+
+
+           Spline spline= g.AddComponent<Spline>();
+           spline.AddNodes(splineNodes);
+           SplineExtrusion splineExtrusion= g.AddComponent<SplineExtrusion>();
+           splineExtrusion.sampleSpacing=2f;
+           splineExtrusion.textureScale=1f;
+           splineExtrusion.material=new Material(Shader.Find("HDRP/LitTessellation"));
+           splineExtrusion.material.color=Color.red;
+            splineExtrusion.material.SetFloat("_Metallic",1f);
+            splineExtrusion.material.SetFloat("_Smoothness",0.256f);
+            splineExtrusion.material.SetFloat("_DoubleSidedEnable",1f);
+           g.transform.parent=_father;
+
+        }
+ }
+
+
+    
 #endregion
 
 

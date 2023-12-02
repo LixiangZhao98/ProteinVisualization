@@ -1,8 +1,5 @@
 ﻿
-using System.Collections.Generic;
 using UnityEngine;
-using System;
-using UnityEditor;
 
 
 
@@ -10,6 +7,7 @@ public class RuntimeController : MonoBehaviour
 {
     public GameObject objAtom;
     public GameObject objStick;
+    public GameObject objSplineMesh;
     public Transform node;
     
 [SerializeField, SetProperty("DATASET")]
@@ -20,7 +18,9 @@ public class RuntimeController : MonoBehaviour
             get { return dataset; }
             set {
                     dataset = value;
+                if(Application.isPlaying)
                  Init(); 
+                
             }
         }
 
@@ -32,9 +32,13 @@ public class RuntimeController : MonoBehaviour
             get { return abstraction; }
             set {
               
-                    abstraction = value;
-                Init();  
-            }
+        abstraction = value;
+        if(pdb!=null){
+                       if(Application.isPlaying)
+        Draw();
+                 
+        }
+        }
         }
 
     
@@ -46,33 +50,15 @@ public class RuntimeController : MonoBehaviour
  
 
 
-   
-   
-void DrawBond(List<Atom> LAtoms) //Draw bonds between all atoms
-    {
-        for (int i = 0; i < LAtoms.Count; i++)
-        {
-            for (int j = 0; j < LAtoms[i].singleDirectionBonds.Count; j++)
-            {
-                Debug.DrawLine(LAtoms[i].obj.transform.position, LAtoms[i].singleDirectionBonds[j].obj.transform.position, Color.red,0.01f,false);
-            }
-        }
-    }
-   
-    
-    
-
-
 
     void Init()
     {   
-        DeleteChildren(node.GetChild(0));
-        DeleteChildren(node.GetChild(1));
-        DeleteChildren(node.GetChild(2));
+
         pdb=new PDBLoader();
         pdb.LoadFromPdb(dataset.ToString());
-        pdb.DrawAbstraction(abstraction,objAtom,objStick,standardAtomScale,standardStickWidth,strandWidth,node);
-        pdb.ShiftNode(node);
+        Draw();
+
+       
 
     }
     void Start()
@@ -81,61 +67,22 @@ void DrawBond(List<Atom> LAtoms) //Draw bonds between all atoms
     }
 
    
- public  void GenerateRibbon(List<Transform> ts, float radius, float thickness)
-    {
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
 
-        foreach (Transform t in ts)
-        {
-            Vector3 normal = Vector3.Cross(t.forward, t.up);  
-            Vector3 right = (normal + t.up).normalized * radius;
-            Vector3 left = -(normal + t.up).normalized * radius;
+   void Draw()
+   {
+        SceneClear();
+        pdb.DrawAbstraction(abstraction,objSplineMesh,objAtom,objStick,standardAtomScale,standardStickWidth,strandWidth,node);
+        
 
-            Vector3 topRight = t.position + right + t.up * thickness / 2;
-            Vector3 topLeft = t.position + left + t.up * thickness / 2; 
-            Vector3 botRight = t.position + t.forward + right - t.up * thickness / 2;
-            Vector3 botLeft = t.position + t.forward + left - t.up * thickness / 2;
+   }
+      void SceneClear()
+   {
+        OperationOnChildren.DeleteChildren(node.GetChild(0));
+        OperationOnChildren.DeleteChildren(node.GetChild(1));
+        OperationOnChildren.DeleteChildren(node.GetChild(2));
+   }
 
-            vertices.Add(topRight);
-            vertices.Add(topLeft);
-            vertices.Add(botRight);
-            vertices.Add(botLeft);
 
-            int index = vertices.Count - 4;
-            triangles.Add(index + 0);
-            triangles.Add(index + 2);
-            triangles.Add(index + 1);
-
-            triangles.Add(index + 1); 
-            triangles.Add(index + 2);
-            triangles.Add(index + 3);
-        }
-
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-
-    }
-    
-void DeleteChildren(Transform t)
-{
- for (var i = t.childCount - 1; i >= 0; i--)
-        {
-#if UNITY_EDITOR
-            if (EditorApplication.isPlaying)
-            {
-                Destroy(t.GetChild(i).gameObject);
-            }
-            else
-            {
-                DestroyImmediate(t.GetChild(i).gameObject);
-            }
-#else
-            Destroy(t.GetChild(i).gameObject);
-#endif
-        }
-}
     void OnGUI() {
         GUIStyle sty=new GUIStyle();
         sty.normal.textColor=Color.black;
