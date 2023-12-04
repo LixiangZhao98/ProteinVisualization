@@ -1,8 +1,7 @@
 # ProteinVisualization
 
 This is a Protein Visualization demo project built with Unity3D. It reads and visualizes .pdb files. The current visualizations includes space-filling, balls-and-sticks, licorice and backbone diagrams, and...the seamless transition between these diagrams. The repository is keeping to update.
-<!-- ![ProteinVisualization](https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein1.png "diagrams")
-![ProteinVisualization](https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein2.png "space-filling") -->
+
 ## Visualization
 <div align=center>
 <img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein2.png" width="615" height="684"> <width="615" height="684"/>
@@ -22,3 +21,10 @@ This is a Protein Visualization demo project built with Unity3D. It reads and vi
 <img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition2.gif" width="640" height="500"> <width="615" height="500"/>
 </div>
 
+# How to use
+* Clone the repo with git lfs installed and open the project using Unity (versions over 2020.3.38f1 have been tested).
+* `Assets/my/Scenes/protein.unity` and `Assets/my/Scenes/proteinAnimation.unity` are the main scenes.
+
+# Thanks
+Many thanks to the authors of open-source repository:
+[SplineMesh](https://github.com/methusalah/SplineMesh "SplineMesh")

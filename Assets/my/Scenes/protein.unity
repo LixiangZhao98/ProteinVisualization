@@ -498,8 +498,8 @@ MonoBehaviour:
   objStick: {fileID: 7405198741733557087, guid: 76a31d1f1ca4be84a971e7f54d601413, type: 3}
   objSplineMesh: {fileID: 7336975276563385264, guid: 02367e70100ed2543a580b887e85de64, type: 3}
   node: {fileID: 544917029}
-  dataset: 2
-  abstraction: 4
+  dataset: 3
+  abstraction: 0
   standardAtomScale: 2
   standardStickWidth: 0.4
   strandWidth: 0.4
