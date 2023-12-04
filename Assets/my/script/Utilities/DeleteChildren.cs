@@ -17,7 +17,7 @@ public static void DeleteChildren(Transform t)
                 GameObject.DestroyImmediate(t.GetChild(i).gameObject);
             }
 #else
-            Destroy(t.GetChild(i).gameObject);
+            GameObject.Destroy(t.GetChild(i).gameObject);
 #endif
         }
 }
