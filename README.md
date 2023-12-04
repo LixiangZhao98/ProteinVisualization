@@ -22,8 +22,9 @@ This is a Protein Visualization demo project built with Unity3D. It reads and vi
 </div>
 
 # How to use
-* Clone the repo with git lfs installed and open the project using Unity (versions over 2020.3.38f1 have been tested).
+* Clone the repo with git lfs installed and open the project using Unity (versions 2020.3.38f1 has been tested).
 * `Assets/my/Scenes/protein.unity` and `Assets/my/Scenes/proteinAnimation.unity` are the main scenes.
+* After you run the program in the editor, you can switch the dataset by first clicking `script` gameobject in the hierarchy, then change the `Dataset` property in the inspector.
 
 # Thanks
 Many thanks to the authors of open-source repository:
