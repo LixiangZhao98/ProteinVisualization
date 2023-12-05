@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.01838684, g: 0.01838684, b: 0.01838684, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -381,7 +381,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 1
+  m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
   m_AllowMSAA: 0
@@ -498,7 +498,7 @@ MonoBehaviour:
   objStick: {fileID: 7405198741733557087, guid: 76a31d1f1ca4be84a971e7f54d601413, type: 3}
   objSplineMesh: {fileID: 7336975276563385264, guid: 02367e70100ed2543a580b887e85de64, type: 3}
   node: {fileID: 544917029}
-  dataset: 3
+  dataset: 9
   abstraction: 0
   standardAtomScale: 2
   standardStickWidth: 0.4
@@ -946,7 +946,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
+  m_TargetDisplay: 1
   m_TargetEye: 3
   m_HDR: 0
   m_AllowMSAA: 0
