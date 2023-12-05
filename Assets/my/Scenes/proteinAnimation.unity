@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.01838684, g: 0.01838684, b: 0.01838684, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -199,11 +199,11 @@ MonoBehaviour:
   freeOrbitParameter:
     limitXAngle: 0
     minXAngle: -360
-    maxXAngle: -360
+    maxXAngle: 360
     limitYAngle: 0
     minYAngle: 360
     maxYAngle: -360
-    orbitSensitive: 0.5
+    orbitSensitive: 100
     mouseMoveRatio: 0.28
   cameraRootTf: {fileID: 544917029}
   cameraTf: {fileID: 1602883190}
@@ -344,8 +344,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 60.7}
-  m_SizeDelta: {x: 1078.2, y: 112.5}
+  m_AnchoredPosition: {x: 1.6113281, y: 59.4}
+  m_SizeDelta: {x: 1081.82, y: 138.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &324922366
 MonoBehaviour:

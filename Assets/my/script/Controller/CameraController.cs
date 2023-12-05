@@ -97,8 +97,8 @@ public class CameraController : MonoBehaviour
         if (Input.GetMouseButton(0))
         {if (EventSystem.current.IsPointerOverGameObject())
     return;
-            targetEulerAngle.x += (-Input.mousePosition.y + lastMousePos.y) * cureentCameraParameter.mouseMoveRatio;
-            targetEulerAngle.y += (Input.mousePosition.x - lastMousePos.x) * cureentCameraParameter.mouseMoveRatio;
+            targetEulerAngle.x -=(-Input.mousePosition.y + lastMousePos.y) * cureentCameraParameter.mouseMoveRatio;
+            targetEulerAngle.y -=(Input.mousePosition.x - lastMousePos.x) * cureentCameraParameter.mouseMoveRatio;
             if (cureentCameraParameter.limitXAngle)
             {
                 targetEulerAngle.x = Mathf.Clamp(targetEulerAngle.x, cureentCameraParameter.minXAngle,

@@ -264,7 +264,6 @@ public void DrawAbstraction(Abstraction  _abstraction,GameObject _objSplineMesh,
      switch (_abstraction)
      {
        case Abstraction.SpaceFilling:
-      
          GenerateSphere(_objAtom,2f,_father.GetChild(0));
        break;
 
@@ -273,7 +272,7 @@ public void DrawAbstraction(Abstraction  _abstraction,GameObject _objSplineMesh,
        case Abstraction.BallAndStick:
         
          GenerateSphere(_objAtom,1f,_father.GetChild(0));
-         GenerateLongStick(_objStick,_standardStickWidth,_father.GetChild(1));
+         GenerateShortStick(_objStick,_standardStickWidth,_father.GetChild(1));
        break;
        case Abstraction.Stick:
          GenerateLongStick(_objStick,_standardStickWidth,_father.GetChild(1));
@@ -295,7 +294,13 @@ public void GenerateSphere(GameObject _g,float _standardAtomScale,Transform _fat
        s.GenerateSphere(_g,_standardAtomScale,_father);
     }
 }
-
+public void GenerateSphereCombined(ref List<Transform> ts,float _standardAtomScale)
+{
+    foreach(var s in lStrands)
+    {
+       s.GenerateSphereCombined(ref ts,_standardAtomScale);
+    }
+}
  public void GenerateShortStick(GameObject _g,float _standardStickWidth,Transform _father)
  {
             foreach(var s in lStrands)

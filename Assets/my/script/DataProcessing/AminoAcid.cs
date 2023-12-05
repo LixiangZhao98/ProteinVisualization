@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using utility;
 
 public class AminoAcid
 {
@@ -187,7 +187,16 @@ public void GenerateSphere(GameObject _g,float _standardAtomScale,Transform _fat
         lAtoms[i].obj=g;
        Atom A= g.AddComponent<Atom>();
        A.Radius=lAtoms[i].Radius;
-        g.transform.parent=_father;
+        g.transform.parent=_father
+        ;
+       }
+}
+public void GenerateSphereCombined(ref List<Transform> ts,float _standardAtomScale)
+{
+    for(int i=0;i<lAtoms.Count;i++)
+       {
+
+        
        }
 }
 public void GenerateShortStick(GameObject _g,float _standardStickWidth,Transform _father)
@@ -207,9 +216,9 @@ public void GenerateShortStick(GameObject _g,float _standardStickWidth,Transform
                 g.transform.localScale=new Vector3(_standardStickWidth,(start-end).magnitude/2*1.1f ,_standardStickWidth); //*1.2f 为了让圆柱嵌入球体
                 g.transform.up=dir;
                 g.GetComponent<Renderer>().material.SetColor("_Color1",lAtoms[i].Color);
-                g.transform.GetChild(0).GetComponent<Renderer>().material.color=lAtoms[i].Color;
+
                 g.GetComponent<Renderer>().material.SetColor("_Color2",lAtoms[i].singleDirectionBonds[j].Color);
-                g.transform.GetChild(1).GetComponent<Renderer>().material.color=lAtoms[i].singleDirectionBonds[j].Color;
+
 
                 g.transform.parent=_father;
             }
@@ -233,11 +242,8 @@ public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform 
                 g.transform.up=dir;
                 g.GetComponent<Renderer>().material.SetColor("_Color1",lAtoms[i].Color);
                 g.GetComponent<Renderer>().material.SetFloat("_Rank1",lAtoms[i].AtomRank);
-                //g.transform.GetChild(0).GetComponent<Renderer>().material.color=lAtoms[i].Color;
                 g.GetComponent<Renderer>().material.SetColor("_Color2",lAtoms[i].singleDirectionBonds[j].Color);
                 g.GetComponent<Renderer>().material.SetFloat("_Rank2",lAtoms[i].singleDirectionBonds[j].AtomRank);
-                //g.transform.GetChild(1).GetComponent<Renderer>().material.color=lAtoms[i].singleDirectionBonds[j].Color;
-                g.GetComponent<Renderer>().material.SetFloat("_Length",(start-end).magnitude*1.8f);
 
                 g.transform.parent=_father;
             }

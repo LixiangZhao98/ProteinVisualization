@@ -151,6 +151,14 @@ public void GenerateSphere(GameObject _g,float _standardAtomScale,Transform _fat
        a.GenerateSphere(_g,_standardAtomScale,_father);
        }
 }
+public void GenerateSphereCombined(ref List<Transform> ts,float _standardAtomScale)
+{
+   foreach(var a in lAminoAcids)
+   {
+
+       a.GenerateSphereCombined( ref ts,_standardAtomScale);
+       }
+}
 public void GenerateShortStick(GameObject _g,float _standardStickWidth,Transform _father)
 {
    foreach(var a in lAminoAcids)
@@ -181,10 +189,7 @@ public void GenerateBackBone(GameObject _g,float _standardStickWidth,Transform _
                 g.transform.localScale=new Vector3(_standardStickWidth,(start-end).magnitude/2*1.04f,_standardStickWidth); 
                 g.transform.up=dir;
                 g.GetComponent<Renderer>().material.SetColor("_Color1",backBone[i].Color);
-                //g.transform.GetChild(0).GetComponent<Renderer>().material.color=lStrands[i].GetBackBone(j).Color;
                 g.GetComponent<Renderer>().material.SetColor("_Color2",backBone[i+1].Color);
-                //g.transform.GetChild(1).GetComponent<Renderer>().material.color=lStrands[i].GetBackBone(j+1).Color;
-                g.GetComponent<Renderer>().material.SetFloat("_Length",(start-end).magnitude*1.8f);
 
                 g.transform.parent=_father;
                 
