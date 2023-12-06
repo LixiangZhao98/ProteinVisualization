@@ -13,7 +13,7 @@ This is a Protein Visualization demo project built with Unity3D. It reads and vi
 
 ## Seamless Transition
 <div align=center>
-<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition.gif" width="640" height="360"> <width="640" height="360"/>
+<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition1.gif" width="640" height="360"> <width="640" height="360"/>
 </div>
 
 
