@@ -1,5 +1,5 @@
 
-Shader "Custom/TwoColorStick2" 
+Shader "Custom/TwoColorStick" 
 {
 
     Properties

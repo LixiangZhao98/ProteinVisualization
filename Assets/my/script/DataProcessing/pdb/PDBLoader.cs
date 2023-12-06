@@ -9,7 +9,9 @@ using utility;
 
 public class PDBLoader
 {
-   
+ public string name;
+ public Vector3 maxPos;
+ public Vector3 minPos;
 static public int maxRank;
    const float HRadius=0.58f;  // 原0.78f
    const float CRadius=0.96f;  //0.86
@@ -52,7 +54,7 @@ static public int maxRank;
    public void LoadFromPdb(string s)
     {
         string m_Path = Application.dataPath+"/my/Data/SARS-CoV-2 20-09";
-        
+        this.name=s;
         StreamReader sr = new StreamReader(m_Path + "/" + s+".pdb");
         string str;
         int strandID=0;
@@ -110,6 +112,8 @@ static public int maxRank;
                 atom.aminoAcidName = str.Substring(17, 3).Trim();
                 atom.aminoAcidsID = int.Parse(str.Substring(23, 4).Trim());
                 atom.pos = new Vector3(float.Parse(str.Substring(31, 8).Trim()), float.Parse(str.Substring(39, 8).Trim()), float.Parse(str.Substring(47, 8).Trim()));
+
+                if(atom)
                 atom.bFactor = float.Parse(str.Substring(61, 5).Trim());
 
                 
@@ -170,10 +174,8 @@ static public int maxRank;
         }
 
         sr.Close();
-        AppendBond();
-        HowManyAtoms();
-        CalAtomRank();
-        ShiftProtein();
+
+        DataProcessing();
 
     }
 
@@ -219,10 +221,6 @@ void AppendBond()
 void HowManyAtoms()
     {
 
-        // foreach(var s in lStrands)
-        // {
-        //     s.HowManyAtoms(ref countN,ref countC,ref countO,ref countH,ref countS);
-        // }
         total=countC+countH+countN+countO+countS+others;
         Debug.Log("N ATOMS = " + countN);
         Debug.Log("C ATOMS = " + countC);
@@ -237,14 +235,47 @@ void HowManyAtoms()
             Debug.Log("backbone Count = " + s.GetBackBoneNum());
         }        
     }
-
-public void ShiftProtein()
+void DataShift()
 {
-  
-       foreach(var ss in lStrands)
+ foreach(var s in lStrands)  //shift data to the center
     {
-        ss.shiftVec3(-GetCenter());
+        s.shiftVec3(-GetCenter());
     }
+}
+void CalMaxMinPos()
+{
+ Vector3  vAve = GetCenter();
+        float xmin,ymin,zmin,xmax,ymax,zmax;
+        xmin = vAve.x;
+        xmax = vAve.x;
+        ymin = vAve.y;
+        ymax = vAve.y;
+        zmin = vAve.z;
+        zmax = vAve.z;
+     
+        List<Atom> lAtom=new List<Atom>();
+        for (int i = 0; i < lStrands.Count; i++)  //Find the max and min   
+        {
+             lAtom.AddRange(lStrands[i].GetAtoms());
+        }
+
+               for (int i = 0; i < lAtom.Count; i++)    
+        {
+            if (xmin > lAtom[i].pos.x)
+                xmin = lAtom[i].pos.x;
+            if (xmax < lAtom[i].pos.x)
+                xmax = lAtom[i].pos.x;
+            if (ymin > lAtom[i].pos.y)
+                ymin = lAtom[i].pos.y;
+            if (ymax < lAtom[i].pos.y)
+                ymax = lAtom[i].pos.y;
+            if (zmin > lAtom[i].pos.z)
+                zmin = lAtom[i].pos.z;
+            if (zmax < lAtom[i].pos.z)
+                zmax = lAtom[i].pos.z;
+        }     
+        minPos=new Vector3(xmin,ymin,zmin);
+        maxPos=new Vector3(xmax,ymax,zmax);
 }
 Vector3 GetCenter()
 {
@@ -255,6 +286,15 @@ Vector3 GetCenter()
     }
     return v/lStrands.Count;
 }
+public void DataProcessing()
+{
+        AppendBond();
+        HowManyAtoms();
+        CalAtomRank();
+        DataShift();
+        CalMaxMinPos();                
+}
+
 
 
 #region  rendering

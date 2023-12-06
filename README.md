@@ -4,21 +4,21 @@ This is a Protein Visualization demo project built with Unity3D. It reads and vi
 
 ## Visualization
 <div align=center>
-<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein2.png" width="615" height="684"> <width="615" height="684"/>
+<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein2.png" width="615" height="684"> <width="640" height="684"/>
 </div>
 
 <div align=center>
-<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein1.png" width="664" height="324"> <width="664" height="324"/>
+<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/protein1.png" width="664" height="324"> <width="640" height="360"/>
 </div>
 
 ## Seamless Transition
 <div align=center>
-<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition.gif" width="640" height="360"> <width="615" height="684"/>
+<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition.gif" width="640" height="360"> <width="640" height="360"/>
 </div>
 
 
 <div align=center>
-<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition2.gif" width="640" height="500"> <width="615" height="500"/>
+<img src="https://github.com/LixiangZhao98/ProteinVisualization/blob/master/Assets/my/pic/transition2.gif" width="640" height="360"> <width="640" height="360"/>
 </div>
 
 # How to use
