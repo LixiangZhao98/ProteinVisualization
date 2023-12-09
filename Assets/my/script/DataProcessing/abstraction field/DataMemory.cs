@@ -27,9 +27,10 @@ public class DataMemory : MonoBehaviour
 
 
    }
-       public static void GenerateStick(GameObject _g,float _standardAtomScale,Transform _father)
+       public static void GenerateStick(GameObject _g,float _standardAtomScale,Transform _father,Material m)
     {
-        pdb.GenerateLongStick(_g,_standardAtomScale,_father);
+
+        pdb.GenerateLongStick(_g,_standardAtomScale,_father, m);
 
 
    }
@@ -53,18 +54,12 @@ public class DataMemory : MonoBehaviour
         OperationOnChildren.DeleteChildren(father.GetChild(2));
    }
    
-    public static void ClearProteinMemory()
-    {
-        pdb = new PDBLoader();
-    }
-
-    
     #endregion
 
     #region DensityFieldInfo
     [SerializeField]
   
-    static public  DensityField densityField = new DensityField();
+    static public  ScalarField densityField = new ScalarField();
 
 
     static public void CreateAbstractionField(int gridNum)
@@ -75,24 +70,23 @@ public class DataMemory : MonoBehaviour
         float zstep = (pdb.maxPos.z - pdb.minPos.z) / gridNum;
         pdb.maxPos+=new Vector3(xstep,ystep,zstep);
         pdb.minPos-=new Vector3(xstep,ystep,zstep);       
-        densityField.InitializeDensityFieldByGapDis(pdb.name,pdb.minPos.x, pdb.maxPos.x, gridNum,pdb.minPos.y, pdb.maxPos.y, gridNum,pdb.minPos.z, pdb.maxPos.z, gridNum);
-        Debug.Log("Create density field success");
+        densityField.InitializeFieldByGapDis(pdb.name,pdb.minPos.x, pdb.maxPos.x, gridNum,pdb.minPos.y, pdb.maxPos.y, gridNum,pdb.minPos.z, pdb.maxPos.z, gridNum);
+ 
 
     }
-
     static public void LoadAbstractionField(float value)
     {
-
-        for(int i=0;i<densityField.GetNodeNum();i++)
-        {
-            densityField.SetNodeDensity(i,value);
-        }
-        Debug.Log("Load density field success");
-
+        densityField.LoadFieldValue(value);
     }
-    public static void ClearDensityMemory()
+
+    static public void LoadAbstractionField(float[] values)
     {
-        densityField = new DensityField(); 
+        densityField.LoadFieldValue(values);
+    }
+
+    static public Texture3D GetTexture3D()
+    {
+       return densityField.GetTexture3D();
     }
     #endregion
 

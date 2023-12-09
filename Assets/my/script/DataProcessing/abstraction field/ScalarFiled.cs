@@ -17,7 +17,7 @@ using UnityEngine;
         [SerializeField]
         private Vector3 nodePosition;
         [SerializeField]
-        private double nodeDensity;
+        private double nodeValue;
         [SerializeField]
         private double enclosedParticleDis;
         [SerializeField]
@@ -37,9 +37,9 @@ using UnityEngine;
         {
             return enclosedParticleDis;
         }
-        public double GetNodeDensity()
+        public double GetNodeValue()
         {
-            return nodeDensity;
+            return nodeValue;
         }
         public Vector3 GetNodePosition()
         {
@@ -53,29 +53,29 @@ using UnityEngine;
         {
             return nodeGridPos;
         }
-        public void SetNodeDensity(double density)
+        public void SetNodeValue(double value)
         {
-            nodeDensity = density;
+            nodeValue = value;
         }
         public void SetNodeGradient(Vector3 g)
         {
             nodeGradient = g;
         }
 
-        public void NodeDensityPlusDis(double dis)
+        public void NodeValuePlusDis(double dis)
         {
             enclosedParticleDis = enclosedParticleDis + dis;
         }
     }
     [System.Serializable]
-    public class DensityField
+    public class ScalarField
     {
         [SerializeField]
         public string name;
         [SerializeField]
         private List<FieldNode> fieldNode;
         [SerializeField]
-        private int[] boxDensity;
+        private int[] boxValue;
         [SerializeField]
         private List<LUTUnit> LUT_;
         [SerializeField]
@@ -91,19 +91,25 @@ using UnityEngine;
         [SerializeField]
         private float zStep;
         [SerializeField]
-        public Vector3 minPos;
+        Vector3 minPos;
         [SerializeField]
-        public Vector3 maxPos;
+        Vector3 maxPos;
         [SerializeField]
-        private float AveNodeDensity;
+        float maxValue;
+        Texture3D fieldTexture;
+        private float AveNodeValue;
         public float XSTEP { get { return xStep; } }
         public float YSTEP { get { return yStep; } }
         public float ZSTEP { get { return zStep; } }
+        public Vector3 MINPOS { get { return minPos; } }
+        public Vector3 MAXPOS { get { return maxPos; } }
         public int XNUM { get { return xNum; } }
         public int YNUM { get { return yNum; } }
         public int ZNUM { get { return zNum; } }
 
-        public float AVE_NODE_DENSITY { get { return AveNodeDensity; } }
+        public float MAXVALUE { get { return maxValue; } }
+
+        public float AVE_NODE_VALUE { get { return AveNodeValue; } }
 
 
         public  int VectorToBoxIndex(Vector3 v)  
@@ -114,10 +120,12 @@ using UnityEngine;
             else
                 return index;
         }
-        public void InitializeDensityFieldByGapDis(string pgName,float xmin, float xmax, int xAxisNum, float ymin, float ymax, int yAxisNum, float zmin, float zmax, int zAxisNum)
+        public void InitializeFieldByGapDis(string pgName,float xmin, float xmax, int xAxisNum, float ymin, float ymax, int yAxisNum, float zmin, float zmax, int zAxisNum)
          {
            
-           name = pgName;
+            name = pgName;
+            maxPos=new Vector3(xmax,ymax,zmax);
+            minPos=new Vector3(xmin,ymin,zmin);
             fieldNode = new List<FieldNode>();
             xStep = (xmax - xmin) / (xAxisNum-1);
             yStep = (ymax - ymin) / (yAxisNum-1);
@@ -148,8 +156,33 @@ using UnityEngine;
             zNum = zAxisNum;
         
             DiscreteClear();
-
+            fieldTexture = new Texture3D(xNum, yNum, zNum, TextureFormat.RGBA32, true);
+            Debug.Log("Create density field success");
         }
+
+        public void UpdateTexture()
+        {
+
+        Color[] colorArray = new Color[xNum * yNum * zNum];
+        // for (int x = 0; x < xNum; x++)
+        // {
+        //     for (int y = 0; y < yNum; y++)
+        //     {
+        //         for (int z = 0; z < zNum; z++)
+        //         {
+        //             Color c = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        //             colorArray[x + (y * xNum) + (z * xNum * yNum)] = c;
+        //         }
+        //     }
+        // }
+        for(int i = 0; i < GetNodeNum(); i++)
+        {
+            colorArray[i] =new Color((float)GetNodeValue(i), 1.0f, 1.0f, 1.0f);
+        }
+        fieldTexture.SetPixels(colorArray);
+        fieldTexture.Apply();
+        }
+
         public float GetProcessedFloat(float f)
         {
             int EffectiveCount = 2;
@@ -179,7 +212,7 @@ using UnityEngine;
 
         public void DiscreteClear()
         {
-            boxDensity = new int[xNum * yNum * zNum];
+            boxValue = new int[xNum * yNum * zNum];
 
             LUT_ = new List<LUTUnit>();
             for (int i = 0; i < xNum*yNum*zNum; i++)
@@ -206,9 +239,9 @@ using UnityEngine;
         {
             return fieldNode[i].GetNodeGridPos();
         }
-        public double GetNodeDensity(int i)
+        public double GetNodeValue(int i)
         {
-            return fieldNode[i].GetNodeDensity();
+            return fieldNode[i].GetNodeValue();
         }
  
         public int GetNodeNum()
@@ -221,21 +254,59 @@ using UnityEngine;
             return LUT_[index].GetLTUnit();
         }
 
+        public Texture3D GetTexture3D()
+        {
+            return fieldTexture;
+        }
+
 
         #endregion
 
         #region Set
-        public void SetNodeDensity(int i, double density)
+
+     public void LoadFieldValue(float[] values)
+    {
+        if(values.Length!=GetNodeNum())
         {
-            fieldNode[i].SetNodeDensity(density);
+            throw new Exception("The input values have different dimension with the field");
         }
-        public void SetNodeGradient(int i, Vector3 g)
+        else
+        {
+        maxValue=float.MinValue;
+        for(int i=0;i<values.Length;i++)
+        {
+            SetNodevalue(i,values[i]);
+            if(values[i]>maxValue)
+            maxValue=values[i];
+        }
+        UpdateTexture();
+        Debug.Log("Load field success");
+        }
+    }
+         public void LoadFieldValue(float value)
+    {
+
+        maxValue=value;
+        for(int i=0;i<GetNodeNum();i++)
+        {
+            SetNodevalue(i,value);
+        }
+        UpdateTexture();
+        Debug.Log("Load field success");
+        
+    }
+
+         void SetNodevalue(int i, double value)
+        {
+            fieldNode[i].SetNodeValue(value);
+        }
+         void SetNodeGradient(int i, Vector3 g)
         {
             fieldNode[i].SetNodeGradient(g);
         }
-        public void SetAveNodeDensity(float f)
+         void SetAveNodeValue(float f)
         {
-            AveNodeDensity = f;
+            AveNodeValue = f;
         }
 
         #endregion

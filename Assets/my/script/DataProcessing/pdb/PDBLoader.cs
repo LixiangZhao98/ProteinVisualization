@@ -37,6 +37,8 @@ static public int maxRank;
    
    public List<Strand> lStrands;
 
+   public Texture3D colTexture3D;
+
 
    public  PDBLoader()
     {
@@ -242,6 +244,16 @@ void DataShift()
         s.shiftVec3(-GetCenter());
     }
 }
+
+public List<Atom> GetAtoms()
+{
+           List<Atom> lAtom=new List<Atom>();
+        for (int i = 0; i < lStrands.Count; i++)  //Find the max and min   
+        {
+             lAtom.AddRange(lStrands[i].GetAtoms());
+        }
+        return lAtom;
+}
 void CalMaxMinPos()
 {
  Vector3  vAve = GetCenter();
@@ -253,12 +265,8 @@ void CalMaxMinPos()
         zmin = vAve.z;
         zmax = vAve.z;
      
-        List<Atom> lAtom=new List<Atom>();
-        for (int i = 0; i < lStrands.Count; i++)  //Find the max and min   
-        {
-             lAtom.AddRange(lStrands[i].GetAtoms());
-        }
 
+         List<Atom> lAtom=GetAtoms();
                for (int i = 0; i < lAtom.Count; i++)    
         {
             if (xmin > lAtom[i].pos.x)
@@ -286,6 +294,8 @@ Vector3 GetCenter()
     }
     return v/lStrands.Count;
 }
+
+
 public void DataProcessing()
 {
         AppendBond();
@@ -299,7 +309,7 @@ public void DataProcessing()
 
 #region  rendering
 
-public void DrawAbstraction(Abstraction  _abstraction,GameObject _objSplineMesh,GameObject _objAtom,GameObject _objStick,float _standardAtomScale, float _standardStickWidth,float _strandWidth,Transform _father)
+public void DrawAbstraction(Abstraction  _abstraction,GameObject _objSplineMesh,GameObject _objAtom,GameObject _objStick,float _standardAtomScale, float _standardStickWidth,float _strandWidth,Transform _father,Material m)
     {
      switch (_abstraction)
      {
@@ -315,7 +325,7 @@ public void DrawAbstraction(Abstraction  _abstraction,GameObject _objSplineMesh,
          GenerateShortStick(_objStick,_standardStickWidth,_father.GetChild(1));
        break;
        case Abstraction.Stick:
-         GenerateLongStick(_objStick,_standardStickWidth,_father.GetChild(1));
+         GenerateLongStick(_objStick,_standardStickWidth,_father.GetChild(1),m);
                 break;
        case Abstraction.BackBone:
          GenerateBackBone(_objStick,_standardStickWidth,_father.GetChild(1));
@@ -348,13 +358,18 @@ public void GenerateSphereCombined(ref List<Transform> ts,float _standardAtomSca
        s.GenerateShortStick(_g,_standardStickWidth,_father);
     }
  }
-public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform _father)
+public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform _father,Material m)
  {
+    List<Color>Color1=new List<Color>();
+    List<Color>Color2=new List<Color>();
+    List<int>Rank1=new List<int>();
+    List<int>Rank2=new List<int>();
+    int  stickIndex=0;
             foreach(var s in lStrands)
     {
-      
-       s.GenerateLongStick(_g,_standardStickWidth,_father);
+       s.GenerateLongStick(_g,_standardStickWidth,_father, m,Color1,Color2,Rank1,Rank2,ref stickIndex);
     }
+    LoadRCBuffer(ref m,Color1,Color2,Rank1,Rank2);
  }
 public void GenerateBackBone(GameObject _g,float _standardStickWidth,Transform _father)
  {
@@ -456,6 +471,32 @@ public void GenerateBackBone(GameObject _g,float _standardStickWidth,Transform _
 
         }
  }
+
+ public void LoadRCBuffer(ref Material m,List<Color>Color1,List<Color>Color2,List<int>Rank1,List<int>Rank2) //load color ranke buffer 
+ {
+
+    ComputeBuffer AtomRank1Buffer=new ComputeBuffer(Rank1.Count, sizeof(int), ComputeBufferType.Default);
+    ComputeBuffer AtomRank2Buffer=new ComputeBuffer(Rank2.Count, sizeof(int), ComputeBufferType.Default);
+    ComputeBuffer AtomColor1Buffer=new ComputeBuffer(Color1.Count, sizeof(float)*4, ComputeBufferType.Default);
+    ComputeBuffer AtomColor2Buffer=new ComputeBuffer(Color2.Count, sizeof(float)*4, ComputeBufferType.Default);
+
+    AtomRank1Buffer.SetData(Rank1);
+
+    AtomRank2Buffer.SetData(Rank2);
+
+    AtomColor1Buffer.SetData(Color1);
+
+    AtomColor2Buffer.SetData(Color2);
+
+
+    m.SetBuffer("_AtomRank1Buffer", AtomRank1Buffer);
+    m.SetBuffer("_AtomRank2Buffer", AtomRank2Buffer);
+    m.SetBuffer("_AtomColor1Buffer", AtomColor1Buffer);
+    m.SetBuffer("_AtomColor2Buffer", AtomColor2Buffer);
+    m.SetInt("_ConnectNum", Rank1.Count);
+
+ }
+
 
 
     

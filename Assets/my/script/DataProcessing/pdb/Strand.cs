@@ -167,12 +167,12 @@ public void GenerateShortStick(GameObject _g,float _standardStickWidth,Transform
        a.GenerateShortStick(_g,_standardStickWidth,_father);
        }
 }
-public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform _father)
+public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform _father,Material m,List<Color>Color1,List<Color>Color2,List<int>Rank1,List<int>Rank2,ref int stickIndex)
 {
    foreach(var a in lAminoAcids)
    {
 
-       a.GenerateLongStick(_g,_standardStickWidth,_father);
+       a.GenerateLongStick(_g,_standardStickWidth,_father, m,Color1,Color2,Rank1,Rank2,ref stickIndex);
        }
 }
 public void GenerateBackBone(GameObject _g,float _standardStickWidth,Transform _father)

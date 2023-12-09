@@ -9,7 +9,7 @@ public class RuntimeController : MonoBehaviour
     public GameObject objStick;
     public GameObject objSplineMesh;
     public Transform node;
-    
+         public Material m;
 [SerializeField, SetProperty("DATASET")]
     private Dataset dataset;
 
@@ -71,7 +71,7 @@ public class RuntimeController : MonoBehaviour
    void Draw()
    {
         SceneClear();
-        pdb.DrawAbstraction(abstraction,objSplineMesh,objAtom,objStick,standardAtomScale,standardStickWidth,strandWidth,node);
+        pdb.DrawAbstraction(abstraction,objSplineMesh,objAtom,objStick,standardAtomScale,standardStickWidth,strandWidth,node,m);
         
 
    }

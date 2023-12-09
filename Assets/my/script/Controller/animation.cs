@@ -10,6 +10,7 @@ public class animation : MonoBehaviour
     public float standardAtomScale=2f;
     public float standardStickWidth=0.4f;
     public float MinStickWidth=0.2f;
+        public Material m;
     PDBLoader pdb;
     private float thre;
     [SerializeField, SetProperty("DATASET")]
@@ -33,7 +34,7 @@ public class animation : MonoBehaviour
         pdb.LoadFromPdb(dataset.ToString());
         SceneClear();
         pdb.GenerateSphere(objAtom,standardAtomScale,node.GetChild(0));
-        pdb.GenerateLongStick(objStick,standardStickWidth,node.GetChild(1));
+        pdb.GenerateLongStick(objStick,standardStickWidth,node.GetChild(1),m); 
         pdb.GenerateStrandTube(objStick,MinStickWidth,node.GetChild(2),10,1f);
         
 
@@ -77,11 +78,7 @@ if(_value>=left&&_value<right)
  if(thre<=PDBLoader.maxRank)
  {
     thre=PDBLoader.maxRank;
-    for(int i=0;i<node.GetChild(1).childCount;i++)  
- {
-  
-   node.GetChild(1).GetChild(i).GetComponent<MeshRenderer>().material.SetFloat("_Cutoff",thre);
- }
+   m.SetFloat("_Cutoff",thre);
  }
 }
 
@@ -109,11 +106,9 @@ for(int i=0;i<node.GetChild(0).childCount;i++)
  if(thre<=PDBLoader.maxRank)
  {
     thre=PDBLoader.maxRank;
-    for(int i=0;i<node.GetChild(1).childCount;i++)  
- {
-  
-   node.GetChild(1).GetChild(i).GetComponent<MeshRenderer>().material.SetFloat("_Cutoff",thre);
- }
+
+   m.SetFloat("_Cutoff",thre);
+ 
  }
 }
 
@@ -128,11 +123,7 @@ if(_value>=left&&_value<right)
 {
 
  thre=Interpolation.LinearInterp(_value,0.5f,0.75f,PDBLoader.maxRank,0f); //stick display x:0.5-0.75    thre:7-0
- for(int i=0;i<node.GetChild(1).childCount;i++)  
- {
-  
-   node.GetChild(1).GetChild(i).GetComponent<MeshRenderer>().material.SetFloat("_Cutoff",thre);
- }
+   m.SetFloat("_Cutoff",thre);
 }
 
 
@@ -147,10 +138,7 @@ if(_value>=left&&_value<right)
 
  if(thre!=0f)
  {thre=0f;
-    for(int i=0;i<node.GetChild(1).childCount;i++)  
- {
-  node.GetChild(1).GetChild(i).GetComponent<MeshRenderer>().material.SetFloat("_Cutoff",thre);
- }
+   m.SetFloat("_Cutoff",thre);
  }
 
 
@@ -169,10 +157,7 @@ if(_value>=left&&_value<right)
 
  if(thre!=0f)
  {thre=0f;
-    for(int i=0;i<node.GetChild(1).childCount;i++)  
- {
-  node.GetChild(1).GetChild(i).GetComponent<MeshRenderer>().material.SetFloat("_Cutoff",thre);
- }
+   m.SetFloat("_Cutoff",thre);
  }
 
 

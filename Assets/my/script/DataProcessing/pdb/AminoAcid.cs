@@ -224,8 +224,9 @@ public void GenerateShortStick(GameObject _g,float _standardStickWidth,Transform
             }
         }
 }
-public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform _father)
+public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform _father,Material m,List<Color>Color1,List<Color>Color2,List<int>Rank1,List<int>Rank2,ref int stickIndex)
  {
+    
          for (int i = 0; i < lAtoms.Count; i++)
         {
             for (int j = 0; j < lAtoms[i].singleDirectionBonds.Count; j++)
@@ -240,12 +241,23 @@ public void GenerateLongStick(GameObject _g,float _standardStickWidth,Transform 
                                 
                 g.transform.localScale=new Vector3(_standardStickWidth,(start-end).magnitude/2*1.04f,_standardStickWidth); 
                 g.transform.up=dir;
-                g.GetComponent<Renderer>().material.SetColor("_Color1",lAtoms[i].Color);
-                g.GetComponent<Renderer>().material.SetFloat("_Rank1",lAtoms[i].AtomRank);
-                g.GetComponent<Renderer>().material.SetColor("_Color2",lAtoms[i].singleDirectionBonds[j].Color);
-                g.GetComponent<Renderer>().material.SetFloat("_Rank2",lAtoms[i].singleDirectionBonds[j].AtomRank);
+                // g.GetComponent<Renderer>().material.SetColor("_Color1",lAtoms[i].Color);
+                // g.GetComponent<Renderer>().material.SetFloat("_Rank1",lAtoms[i].AtomRank);
+                // g.GetComponent<Renderer>().material.SetColor("_Color2",lAtoms[i].singleDirectionBonds[j].Color);
+                // g.GetComponent<Renderer>().material.SetFloat("_Rank2",lAtoms[i].singleDirectionBonds[j].AtomRank);
 
+                Color1.Add(lAtoms[i].Color);
+                Color2.Add(lAtoms[i].singleDirectionBonds[j].Color);
+                Rank1.Add(lAtoms[i].AtomRank);
+                Rank2.Add(lAtoms[i].singleDirectionBonds[j].AtomRank);
+
+                g.GetComponent<Renderer>().material=m;
+                Vector2[] uv2=new Vector2[g.GetComponent<MeshFilter>().mesh.vertexCount];
+                for(int ii=0;ii<uv2.Length;ii++)
+                uv2[ii]=new Vector2(stickIndex,0f);
+                g.GetComponent<MeshFilter>().mesh.uv2=uv2;
                 g.transform.parent=_father;
+                stickIndex++;
             }
         }
  }

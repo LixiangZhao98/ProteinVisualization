@@ -104,5 +104,6 @@ Shader "Custom/TwoColorStick"
             ENDCG
         }
     }
+        Fallback "VertexLit"
 }
 

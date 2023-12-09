@@ -12,6 +12,7 @@ public GameObject objAtom;
     public float standardStickWidth=0.4f;
     public float MinStickWidth=0.2f;
 
+    public Material m;
 
     [SerializeField, SetProperty("DATASET")]
     private Dataset dataset;
@@ -32,8 +33,9 @@ public GameObject objAtom;
     {
      DataMemory.SceneClear(node);
      DataMemory.LoadDataBypdb(dataset.ToString());
-     DataMemory.CreateAbstractionField(64);
+     DataMemory.CreateAbstractionField(128);
      DataMemory.GenerateSphere(objAtom,standardAtomScale,node.GetChild(0));
+     DataMemory.GenerateStick(objStick,standardStickWidth,node.GetChild(1),m);
      
 
     }
@@ -44,13 +46,13 @@ public GameObject objAtom;
 
     void Update()
     {
-        DataMemory.LoadAbstractionField(1f);
+
     }
 
 }
 
-//         for(int i=0;i<DataMemory.densityField.GetNodeNum();i++)
-//      {
+//   for(int i=0;i<DataMemory.densityField.GetNodeNum();i++)
+//    {
 //   GameObject g= GameObject.CreatePrimitive(PrimitiveType.Sphere);
 //   g.transform.parent=GameObject.Find("Model_").transform;
 //   g.transform.position=DataMemory.densityField.GetNodedPos(i);
