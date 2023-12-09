@@ -2,7 +2,7 @@
 
 This is a Protein Visualization demo project built with Unity3D. It reads and visualizes .pdb files. The current visualizations includes space-filling, balls-and-sticks, licorice and backbone diagrams, and...the seamless transition between these diagrams. 
 
-The repository is keeping to update. The author is working hard to fix the bugs and add new things. If you find it helpful, could you please give a STAR. Thanks in advance.
+The repository is keeping to update. The author is working hard to fix the bugs and add new things. If you find it helpful, could you please give a `STAR`. Thanks in advance.
 
 ## Visualization
 <div align=center>
